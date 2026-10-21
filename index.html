@@ -1,4 +1,117 @@
-<!doctype html>
+  #arcsteel-launcher{position:fixed;right:20px;bottom:20px;z-index:9999;display:flex;align-items:center;gap:10px;border:1px solid #4d78a8;border-radius:999px;background:#0b1b30;color:#f4f8ff;padding:13px 18px;font:700 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 8px 28px #06101f70;cursor:pointer}
+  #arcsteel-launcher-mark{display:grid;place-items:center;width:27px;height:27px;border-radius:9px;background:linear-gradient(135deg,#9fd8ff,#4a8ed7);color:#06172a;font-size:16px;font-weight:900}
+  #arcsteel-panel{position:fixed;right:20px;bottom:82px;z-index:9999;width:min(380px,calc(100vw - 28px));height:min(540px,calc(100dvh - 112px));display:none;flex-direction:column;overflow:hidden;border:1px solid #28415e;border-radius:20px;background:#0b1727;box-shadow:0 20px 65px #020814a8;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#eaf3ff}
+  #arcsteel-panel.open{display:flex}
+  #arcsteel-head{display:flex;align-items:center;gap:11px;background:linear-gradient(120deg,#102947,#0b1b30);border-bottom:1px solid #29435f;padding:15px}
+  #arcsteel-mark{display:grid;place-items:center;flex:none;width:42px;height:42px;border:1px solid #5d9bce;border-radius:13px;background:linear-gradient(145deg,#b5e5ff,#4d91d0);color:#07182a;font-size:21px;font-weight:950}
+  #arcsteel-head strong{display:block;font-size:15px;letter-spacing:.09em}
+  #arcsteel-head small{display:block;color:#a8c0d9;font-size:11px}
+  #arcsteel-status{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#5ee0a0}
+  #arcsteel-close{margin-left:auto;border:0;background:transparent;color:#dcecff;font-size:25px;cursor:pointer;padding:0 5px}
+  #arcsteel-messages{padding:15px;overflow:auto;flex:1;background:radial-gradient(ellipse at top left,#142943 0%,#0b1727 65%)}
+  .arcsteel-msg{max-width:94%;padding:11px 13px;border-radius:14px;margin:0 0 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+  .arcsteel-bot{background:#12253b;border:1px solid #29445f;border-top-left-radius:4px;color:#eaf3ff}
+  .arcsteel-user{background:#c5e8ff;color:#07182a;margin-left:auto;border-top-right-radius:4px}
+  #arcsteel-quick{display:flex;gap:7px;flex-wrap:wrap;padding:0 13px 12px;background:#0b1727}
+  .arcsteel-chip{border:1px solid #355575;border-radius:999px;background:#10263d;color:#d5ebff;padding:7px 10px;font:600 12px system-ui;cursor:pointer}
+  #arcsteel-form{display:flex;gap:8px;padding:12px;border-top:1px solid #29415a;background:#091321}
+  #arcsteel-input{min-width:0;flex:1;border:1px solid #35506d;border-radius:11px;background:#0f2136;color:#f3f8ff;padding:11px;font:14px system-ui;outline-color:#79bfff}
+  #arcsteel-input::placeholder{color:#91a9c2}
+  #arcsteel-send{border:0;border-radius:11px;background:#b8e2ff;color:#07182a;padding:0 15px;font-weight:800;cursor:pointer}
+  #arcsteel-launcher:focus-visible,#arcsteel-close:focus-visible,.arcsteel-chip:focus-visible,#arcsteel-send:focus-visible{outline:3px solid #8ccaff;outline-offset:3px}
+  @media(max-width:480px){#arcsteel-launcher{right:14px;bottom:14px}#arcsteel-panel{right:14px;bottom:74px;width:calc(100vw - 28px);height:min(560px,calc(100dvh - 100px))}}
+</style>
+
+<button id="arcsteel-launcher" type="button" aria-controls="arcsteel-panel" aria-expanded="false">
+  <span id="arcsteel-launcher-mark" aria-hidden="true">A</span> Ask ARCSTEEL
+</button>
+<section id="arcsteel-panel" role="dialog" aria-label="ARCSTEEL AI chat" aria-modal="false">
+  <header id="arcsteel-head">
+    <div id="arcsteel-mark" aria-hidden="true">A</div>
+    <div><strong>ARCSTEEL</strong><small><span id="arcsteel-status"></span>VORTEX Dynamics · Website Assistant</small></div>
+    <button id="arcsteel-close" type="button" aria-label="Close chat">×</button>
+  </header>
+  <div id="arcsteel-messages" aria-live="polite" aria-relevant="additions">
+    <div class="arcsteel-msg arcsteel-bot">ARCSTEEL online. Welcome to VORTEX Dynamics. ⚙️\n\nI can help you explore our divisions and explain what VORTEX Dynamics does. What are you looking for?</div>
+  </div>
+  <div id="arcsteel-quick" aria-label="Suggested questions">
+    <button class="arcsteel-chip" type="button" data-question="What are the divisions?">Our divisions</button>
+    <button class="arcsteel-chip" type="button" data-question="Tell me about Aerospace.">Aerospace</button>
+    <button class="arcsteel-chip" type="button" data-question="Tell me about Game Division.">Game Division</button>
+    <button class="arcsteel-chip" type="button" data-question="Tell me about CyberTech.">CyberTech</button>
+  </div>
+  <form id="arcsteel-form">
+    <input id="arcsteel-input" type="text" maxlength="400" placeholder="Message ARCSTEEL…" autocomplete="off" aria-label="Your message" required>
+    <button id="arcsteel-send" type="submit">Send</button>
+  </form>
+</section>
+
+<script>
+(() => {
+  const launcher = document.getElementById('arcsteel-launcher');
+  const panel = document.getElementById('arcsteel-panel');
+  const close = document.getElementById('arcsteel-close');
+  const messages = document.getElementById('arcsteel-messages');
+  const form = document.getElementById('arcsteel-form');
+  const input = document.getElementById('arcsteel-input');
+
+  // This first release uses curated responses, not a live generative AI model.
+  const knowledge = [
+    { keys: ['division','divisions','what do you do','what is vortex','what is vortex dynamics'], answer: 'VORTEX Dynamics brings several interests together through five divisions:\\n\\n✈️ Aerospace — flight, aircraft concepts, and aerospace engineering.\\n🛩️ Paper Plane — paper aircraft design and flight testing.\\n⚛️ Physics & Chemistry — science concepts and safe, educational experiments.\\n🎮 Game Division — gaming, crew activities, and game projects.\\n💻 CyberTech — computing, AI, and digital technology.\\n\\nEach division explores a different field under one organization.' },
+    { keys: ['aerospace','aircraft','aerodynamic','flight','aviation'], answer: '✈️ Aerospace explores the science and engineering of flight, including aerodynamics, lift and drag, stability, aircraft concepts, and propulsion principles.' },
+    { keys: ['paper plane','paper-plane','paper aircraft','folded plane'], answer: '🛩️ Paper Plane focuses on designing and testing folded-paper aircraft, studying glide and stability, and improving designs through observation.' },
+    { keys: ['physics','chemistry','science','material'], answer: '⚛️ Physics & Chemistry explores scientific principles, materials, and safe experiments that turn questions into learning.' },
+    { keys: ['game division','gaming','blox fruits','crew','game projects','games'], answer: '🎮 Game Division focuses on gaming, crew activities, gameplay goals, and game-related projects.' },
+    { keys: ['cybertech','cyber tech','technology','artificial intelligence','ai','computing','computer','digital'], answer: '💻 CyberTech explores computing, artificial intelligence, digital tools, and technology concepts with a focus on useful skills and responsible use.' },
+    { keys: ['arcsteel','your name','who are you','what are you'], answer: 'I’m ARCSTEEL, the official website assistant for VORTEX Dynamics. This prototype uses a curated knowledge base; a live AI model has not been connected yet.' },
+    { keys: ['mission','about','purpose','goal','organization'], answer: 'VORTEX Dynamics brings engineering concepts, science, gaming, and technology together. The aim is to explore ideas, learn through testing, and build projects responsibly.' },
+    { keys: ['contact','email','owner','join','membership'], answer: 'I don’t have verified contact or membership details yet. Please use the official contact information published on the VORTEX Dynamics website.' },
+    { keys: ['hello','hi','hey','sup','good morning','good evening'], answer: 'Hello! 👋 ARCSTEEL online. You can ask me about Aerospace, Paper Plane, Physics & Chemistry, Game Division, CyberTech, or VORTEX Dynamics.' },
+    { keys: ['thank','thanks'], answer: 'You’re welcome. ARCSTEEL standing by. ⚙️' }
+  ];
+
+  function addMessage(text, who) {
+    const bubble = document.createElement('div');
+    bubble.className = 'arcsteel-msg ' + (who === 'user' ? 'arcsteel-user' : 'arcsteel-bot');
+    bubble.textContent = text;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function getAnswer(message) {
+    const text = message.toLowerCase().replace(/[’']/g, "'");
+    for (const item of knowledge) {
+      if (item.keys.some(key => text.includes(key))) return item.answer;
+    }
+    return 'I’m the first ARCSTEEL prototype, so my answers are limited to the information programmed into this version. Try asking about our divisions, Aerospace, Paper Plane, Physics & Chemistry, Game Division, CyberTech, or our mission. A live AI model can be connected in a later version.';
+  }
+
+  function openChat() {
+    panel.classList.add('open');
+    launcher.setAttribute('aria-expanded', 'true');
+    input.focus();
+  }
+  function closeChat() {
+    panel.classList.remove('open');
+    launcher.setAttribute('aria-expanded', 'false');
+    launcher.focus();
+  }
+  function send(message) {
+    const clean = message.trim();
+    if (!clean) return;
+    addMessage(clean, 'user');
+    addMessage(getAnswer(clean), 'bot');
+    input.value = '';
+    input.focus();
+  }
+
+  launcher.addEventListener('click', () => panel.classList.contains('open') ? closeChat() : openChat());
+  close.addEventListener('click', closeChat);
+  form.addEventListener('submit', event => { event.preventDefault(); send(input.value); });
+  document.querySelectorAll('.arcsteel-chip').forEach(button => button.addEventListener('click', () => send(button.dataset.question)));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && panel.classList.contains('open')) closeChat(); });
+})();
+</script><!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
